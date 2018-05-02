@@ -1,0 +1,30 @@
+############################################################################################
+#
+# ## Transcriptome annotation stats phase 2 ##   
+# Number of transcripts with BLAST hits in a reference proteome
+# Number of unique proteins in the reference proteome with a BLAST hit
+# Collapse factor (average number of transcripts that match the same protein sequence)
+#
+############################################################################################
+
+import pandas as pd
+from pandas import DataFrame, read_csv
+
+# Number of transcripts with BLAST hits in a reference proteome - went for unique hits here, but txn_hits will give all
+df = pd.read_csv("NW-1.physco.blastx", sep="\t", header = None, usecols=[0,1], names =["Query", "Protein_Hit"])
+txn_hits = len(df)
+uni_txn_hits = set(df["Query"])
+
+# Number of unique proteins in the reference proteome with a BLAST hit
+uni_pro = set(df["Protein_Hit"])
+no_uni_pro = len(uni_pro)
+
+# Collapse factor (average number of transcripts that match the same protein sequence)
+df2 = df.groupby("Protein_Hit")["Query"].count()
+df2.tolist()
+collapse_factor = df2.mean()
+
+## Print the relevant info
+print("Number of unique transcripts with a BLAST hit: %s" % (uni_txn_hits))
+print("Number of unique proteins: %s" % (no_uni_pro))
+print("The collapse factor is: %s" % (collapse_factor))
